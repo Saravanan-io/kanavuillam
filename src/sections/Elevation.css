@@ -1,0 +1,658 @@
+/* ==========================================
+   Elevation.css — Cinematic Scroll to Build
+   Light Theme UI (Matching Landing Page)
+   ========================================== */
+
+.elev-section {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background: var(--cream, #F0F4FF); /* Opaque background to prevent other sections from bleeding through */
+}
+
+/* Background Gradients */
+.elev-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.elev-sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.04) 0%, transparent 100%);
+}
+.elev-horizon {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 250px;
+  background: linear-gradient(to top, rgba(240, 244, 255, 0.5) 0%, transparent 100%);
+}
+
+.elev-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 3rem;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 6.5rem 2rem 2.5rem;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   LEFT COLUMN: Pinned Vertical Stepper
+   ========================================== */
+.elev-left-col {
+  flex: 0 0 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 1rem;
+}
+
+.elev-stepper-title {
+  margin-bottom: 2rem;
+}
+.est-sub {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--gold, #4f46e5); /* Indigo branding */
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+.est-main {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+  line-height: 1.1;
+  margin-bottom: 0.75rem;
+}
+.est-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary, #475569);
+  line-height: 1.4;
+}
+
+/* Stepper List */
+.elev-stepper-list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  padding-left: 1.8rem;
+}
+
+/* Vertical timeline indicator line */
+.elev-stepper-list::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  bottom: 12px;
+  width: 2px;
+  background: rgba(99, 102, 241, 0.12);
+  border-radius: 2px;
+}
+.elev-stepper-line {
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  width: 2px;
+  height: var(--height, 0%);
+  background: linear-gradient(to bottom, var(--gold, #4f46e5), var(--gold-light, #a5b4fc));
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+  transition: height 0.3s ease-out;
+  transform-origin: top;
+  z-index: 1;
+}
+
+.elev-step-item {
+  position: relative;
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+  opacity: 0.35;
+  transform: translateX(-5px);
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.esi-bubble {
+  position: absolute;
+  left: -28px;
+  top: 2px;
+  width: 22px;
+  height: 22px;
+  background: var(--pure-white, #FFFFFF);
+  border: 1.5px solid rgba(99, 102, 241, 0.22);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.75rem;
+  z-index: 2;
+  transition: all 0.4s ease;
+}
+
+.esi-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.esi-index {
+  font-size: 0.65rem;
+  color: var(--text-muted, #94a3b8);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.esi-label {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-secondary, #475569);
+  transition: color 0.3s ease;
+}
+.esi-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted, #94a3b8);
+  line-height: 1.3;
+}
+
+/* Active Step Styling */
+.elev-step-item.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+.elev-step-item.active .esi-bubble {
+  background: var(--gold, #4f46e5);
+  border-color: var(--gold, #4f46e5);
+  color: var(--pure-white, #FFFFFF);
+  box-shadow: 0 0 14px rgba(79, 70, 229, 0.4);
+}
+.elev-step-item.active .esi-label {
+  color: var(--text-primary, #0f172a);
+}
+.elev-step-item.active .esi-index {
+  color: var(--gold, #4f46e5);
+}
+.elev-step-item.active .esi-desc {
+  color: var(--text-secondary, #475569);
+}
+
+/* Completed Step Styling */
+.elev-step-item.completed {
+  opacity: 0.75;
+}
+.elev-step-item.completed .esi-bubble {
+  border-color: var(--gold, #4f46e5);
+  color: var(--gold, #4f46e5);
+  background: var(--pure-white, #FFFFFF);
+}
+.elev-step-item.completed .esi-label {
+  color: var(--text-secondary, #475569);
+}
+
+/* ==========================================
+   RIGHT COLUMN: Cinematic Viewport
+   ========================================== */
+.elev-right-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+/* Viewport Wrapper */
+.elev-viewport-wrapper {
+  position: relative;
+  width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--card-border, rgba(99, 102, 241, 0.12));
+  box-shadow: var(--card-shadow-lg, 0 20px 50px rgba(15, 23, 42, 0.10));
+  background: var(--pure-white, #FFFFFF);
+}
+
+.elev-viewport-wrapper::before {
+  content: '';
+  display: block;
+  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+}
+
+.elev-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  will-change: transform;
+}
+
+/* Viewport Info Overlay */
+.elev-viewport-overlay-text {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--card-border, rgba(99, 102, 241, 0.12));
+  padding: 5px 14px;
+  border-radius: 30px;
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--gold, #4f46e5);
+  box-shadow: var(--card-shadow, 0 10px 30px rgba(15, 23, 42, 0.06));
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Base Site Ground & Sky (Bright & Sunny Morning) */
+.elev-base-site {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.ebs-sky {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 65%;
+  background: linear-gradient(to bottom, #BAE6FD 0%, #E0F2FE 45%, #FFEDD5 85%, #FED7AA 100%);
+  opacity: 0.95;
+}
+.ebs-ground-grid {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 35%;
+  background-color: var(--cream-mid, #F8FAFF);
+  background-image: 
+    linear-gradient(rgba(99, 102, 241, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center bottom;
+  transform: perspective(300px) rotateX(45deg);
+  transform-origin: top center;
+  box-shadow: inset 0 20px 30px rgba(99, 102, 241, 0.05);
+}
+
+/* Canvas Particle Layer */
+.elev-particle-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+}
+
+/* ==========================================
+   CONSTRUCTION EFFECTS & LAYERS
+   ========================================== */
+
+/* Stage 1: Golden Sparks Beam & Ripples */
+.elev-spark-beam {
+  position: absolute;
+  left: 50%;
+  bottom: 35%;
+  width: 4px;
+  height: 65%;
+  background: linear-gradient(to top, rgba(251, 191, 36, 1), rgba(251, 191, 36, 0.1));
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.8);
+  transform: translateX(-50%);
+  transform-origin: bottom center;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+}
+.elev-spark-ripple {
+  position: absolute;
+  left: 50%;
+  bottom: 31%;
+  width: 120px;
+  height: 40px;
+  border: 1.5px solid rgba(251, 191, 36, 0.6);
+  border-radius: 50%;
+  transform: translate(-50%, 50%) rotateX(55deg);
+  transform-origin: center;
+  z-index: 9;
+  opacity: 0;
+  pointer-events: none;
+}
+.elev-spark-ripple.r2 { width: 220px; height: 70px; border-width: 1px; }
+.elev-spark-ripple.r3 { width: 320px; height: 100px; border-width: 0.5px; }
+
+/* Stage 2: Blueprint & Lasers */
+.elev-svg-blueprint {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  pointer-events: none;
+}
+.elev-blueprint-line {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  filter: drop-shadow(0 0 3px rgba(99, 102, 241, 0.6));
+  opacity: 0;
+}
+.elev-laser-sweep {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #4f46e5 20%, #ffffff 50%, #4f46e5 80%, transparent);
+  box-shadow: 0 0 12px #4f46e5, 0 0 20px rgba(99, 102, 241, 0.5);
+  z-index: 6;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Stage 3: Foundations & Concrete */
+.elev-foundation-slab {
+  position: absolute;
+  background: #64748B; /* Concrete gray */
+  border: 1px solid #94A3B8;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  z-index: 3;
+}
+.elev-concrete-pillar {
+  position: absolute;
+  background: #94A3B8;
+  border-left: 1.5px solid #CBD5E1;
+  border-right: 1.5px solid #64748B;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+  z-index: 4;
+}
+/* Rebars sticking out of columns */
+.elev-rebar-line {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 1px;
+  height: 25px;
+  background: #475569;
+  border-left: 1px solid #64748B;
+  border-right: 1px solid #334155;
+  transform: translateX(-50%);
+  transform-origin: bottom center;
+}
+
+/* Stage 4: Skeletal Beams */
+.elev-skeletal-beam {
+  position: absolute;
+  background: #64748B;
+  border: 1px solid #94A3B8;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  z-index: 4;
+}
+
+/* Stage 5: Brick Walls & Glass */
+.elev-brick-wall {
+  position: absolute;
+  background: linear-gradient(130deg, #C2410C 0%, #EA580C 70%, #9A3412 100%);
+  border: 1px solid #C2410C;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.15), 0 5px 12px rgba(0, 0, 0, 0.15);
+  z-index: 4;
+}
+.elev-glass-pane {
+  position: absolute;
+  background: rgba(186, 230, 253, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(2px);
+  z-index: 5;
+}
+
+/* Stage 6: Roof Panels */
+.elev-roof-panel {
+  position: absolute;
+  background: #475569;
+  border: 1px solid #64748B;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 6;
+}
+
+/* Stage 7: Final Image Render */
+.elev-final-render {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Stage 7+: Warm Light Overlays */
+.elev-light-overlay {
+  position: absolute;
+  background: radial-gradient(circle, rgba(253, 224, 71, 0.5) 0%, rgba(245, 158, 11, 0.2) 60%, transparent 100%);
+  mix-blend-mode: screen;
+  z-index: 11;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* Bloom & Flare Overlays */
+.elev-bloom-layer {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 75% 20%, rgba(251, 146, 60, 0.18) 0%, transparent 70%);
+  mix-blend-mode: screen;
+  z-index: 12;
+  pointer-events: none;
+  opacity: 0;
+}
+.elev-lens-flare {
+  position: absolute;
+  top: 15%;
+  left: 70%;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.85) 0%, rgba(253, 186, 116, 0.35) 30%, rgba(253, 186, 116, 0.08) 60%, transparent 100%);
+  mix-blend-mode: screen;
+  z-index: 13;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+}
+
+/* ==========================================
+   METADATA PANEL & CARD GRID
+   ========================================== */
+.elev-meta-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: var(--card-bg, rgba(255, 255, 255, 0.95));
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border, rgba(99, 102, 241, 0.12));
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: var(--card-shadow, 0 10px 30px rgba(15, 23, 42, 0.06));
+}
+
+/* Dimensions Grid */
+.elev-dims-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+.elev-dim-card {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  background: var(--cream-mid, #F8FAFF);
+  border: 1px solid var(--card-border, rgba(99, 102, 241, 0.12));
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+.elev-dim-card:hover {
+  border-color: rgba(99, 102, 241, 0.25);
+  background: var(--cream-soft, #FFFFFF);
+  transform: translateY(-2px);
+  box-shadow: var(--card-shadow, 0 10px 30px rgba(15, 23, 42, 0.06));
+}
+.edc-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold, #4f46e5);
+  background: rgba(99, 102, 241, 0.06);
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+.edc-info {
+  display: flex;
+  flex-direction: column;
+}
+.edc-val {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+}
+.edc-label {
+  font-size: 0.65rem;
+  color: var(--text-muted, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Bottom Split Row */
+.elev-bottom-row {
+  display: flex;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+/* Materials list */
+.elev-materials-card {
+  flex: 1.3;
+  background: var(--cream-mid, #F8FAFF);
+  border: 1px solid var(--card-border, rgba(99, 102, 241, 0.12));
+  border-radius: 14px;
+  padding: 1.1rem;
+}
+.emc-title {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin-bottom: 0.8rem;
+  letter-spacing: 0.02em;
+}
+.emc-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+.emc-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.emc-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  flex-shrink: 0;
+}
+.emc-info {
+  display: flex;
+  flex-direction: column;
+}
+.emc-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+}
+.emc-usage {
+  font-size: 0.62rem;
+  color: var(--text-muted, #94a3b8);
+}
+
+/* Action CTAs */
+.elev-actions-card {
+  flex: 0.9;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  justify-content: center;
+}
+.elev-actions-card .btn-gold,
+.elev-actions-card .btn-ghost {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================
+   RESPONSIVENESS
+   ========================================== */
+@media (max-width: 1100px) {
+  .elev-inner {
+    flex-direction: column;
+    padding-top: 5.5rem;
+    gap: 2rem;
+  }
+  .elev-left-col {
+    flex: none;
+    width: 100%;
+  }
+  .elev-stepper-list {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-left: 0;
+    padding-bottom: 1rem;
+    gap: 1.2rem;
+  }
+  .elev-stepper-list::before,
+  .elev-stepper-line {
+    display: none; /* Hide vertical line on tablet/mobile */
+  }
+  .elev-step-item {
+    flex: 0 0 180px;
+    padding-top: 1.5rem;
+    transform: none;
+  }
+  .esi-bubble {
+    top: -12px;
+    left: 0;
+  }
+  .elev-dims-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .elev-bottom-row {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  .elev-dims-grid {
+    grid-template-columns: 1fr;
+  }
+  .emc-list {
+    grid-template-columns: 1fr;
+  }
+}

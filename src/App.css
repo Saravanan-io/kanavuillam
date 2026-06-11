@@ -1,0 +1,26 @@
+/* ── App Layout ── */
+.app {
+  position: relative;
+  min-height: 100vh;
+}
+
+main {
+  position: relative;
+  z-index: 2;
+}
+
+/* Ensure sections don't clip ambient canvas */
+section {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ascending stacking contexts to prevent z-index crossover during ScrollTrigger pins */
+#landing    { z-index: 10; }
+#features   { z-index: 20; }
+#threed     { z-index: 30; }
+#vastu      { z-index: 40; }
+#cost       { z-index: 50; }
+#structural { z-index: 60; }
+#elevation  { z-index: 70; }
+#reports    { z-index: 80; }
