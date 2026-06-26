@@ -11,18 +11,35 @@
 .bird {
   position: absolute;
   top: var(--y);
-  left: -80px;
-  animation:
-    birdFly   var(--duration)  linear infinite var(--delay),
-    birdWaver var(--waver-dur) ease-in-out infinite var(--waver-del);
+  left: 0;
+  will-change: transform;
+  animation: birdFly var(--duration) linear infinite var(--delay);
 }
+
+.bird-waver {
+  will-change: transform;
+  animation: birdWaver var(--waver-dur) ease-in-out infinite var(--waver-del);
+}
+
 @keyframes birdFly {
-  0%   { left: -80px;  }
-  100% { left: 110vw;  }
+  0% {
+    transform: translate3d(-80px, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(110vw, 0, 0);
+  }
 }
+
 @keyframes birdWaver {
-  0%,100% { transform: translateY(0); }
-  50%     { transform: translateY(var(--waver, 4px)); }
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, var(--waver, 4px), 0);
+  }
 }
 
 /* Wing flap */
@@ -30,26 +47,40 @@
   animation: wingFlapL 0.55s ease-in-out infinite alternate;
   transform-origin: 30px 16px;
 }
+
 .wing-r {
   animation: wingFlapR 0.55s ease-in-out infinite alternate;
   transform-origin: 30px 16px;
 }
+
 @keyframes wingFlapL {
-  0%   { d: path("M30 16 Q18 6 4 10");  }
-  100% { d: path("M30 16 Q18 24 4 22"); }
+  0% {
+    d: path("M30 16 Q18 6 4 10");
+  }
+
+  100% {
+    d: path("M30 16 Q18 24 4 22");
+  }
 }
+
 @keyframes wingFlapR {
-  0%   { d: path("M30 16 Q42 6 56 10");  }
-  100% { d: path("M30 16 Q42 24 56 22"); }
+  0% {
+    d: path("M30 16 Q42 6 56 10");
+  }
+
+  100% {
+    d: path("M30 16 Q42 24 56 22");
+  }
 }
 
 /* Background layer — very small, light */
 .bird-bg .bird-shape {
   opacity: 0.35;
 }
+
 .bird-bg .wing-l,
 .bird-bg .wing-r {
-  stroke: rgba(80,40,10,0.6);
+  stroke: rgba(80, 40, 10, 0.6);
   animation-duration: 0.75s;
 }
 
@@ -57,9 +88,10 @@
 .bird-mid .bird-shape {
   opacity: 0.55;
 }
+
 .bird-mid .wing-l,
 .bird-mid .wing-r {
-  stroke: rgba(60,26,8,0.75);
+  stroke: rgba(60, 26, 8, 0.75);
   animation-duration: 0.58s;
 }
 
@@ -68,6 +100,7 @@
   opacity: 0.82;
   filter: blur(0.5px);
 }
+
 .bird-fg .wing-l,
 .bird-fg .wing-r {
   stroke: #3A1A0A;

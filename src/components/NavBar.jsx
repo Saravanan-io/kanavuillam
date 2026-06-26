@@ -1,28 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './NavBar.css';
 
-export default function NavBar({ sections }) {
+export default function NavBar({ showSections }) {
   const navRef = useRef(null);
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('landing');
 
   useEffect(() => {
+    let lastScrolled = false;
     const onScroll = () => {
-      setScrolled(window.scrollY > 60);
-
-      // Detect active section
-      const scrollY = window.scrollY + window.innerHeight * 0.4;
-      sections.forEach(({ id }) => {
-        const el = document.getElementById(id);
-        if (el) {
-          const top = el.offsetTop;
-          const bot = top + el.offsetHeight;
-          if (scrollY >= top && scrollY < bot) setActiveSection(id);
-        }
-      });
+      const isScrolled = window.scrollY > 60;
+      if (isScrolled !== lastScrolled) {
+        lastScrolled = isScrolled;
+        setScrolled(isScrolled);
+      }
     };
     window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -32,19 +23,13 @@ export default function NavBar({ sections }) {
       { y: 0, opacity: 1, duration: 1.2, ease: 'power4.out', delay: 1.6 }
     );
 
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [sections]);
-
-  const navLinks = [
-    { label: 'Home',      id: 'landing' },
-    { label: 'Features',  id: 'features' },
-    { label: 'About',     id: 'threed' },
-    { label: 'Contact',   id: 'reports' },
-  ];
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, [showSections]);
 
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-    setMenuOpen(false);
   };
 
   return (
@@ -60,23 +45,8 @@ export default function NavBar({ sections }) {
             </svg>
           </div>
           <span className="nav-logo-text">
-            Plan<span className="logo-x">X</span>
+            Kanavu<span className="logo-x">illam</span>
           </span>
-        </div>
-
-        {/* Links */}
-        <div className={`nav-links ${menuOpen ? 'open' : ''}`}>
-          {navLinks.map(({ label, id }) => (
-            <button
-              key={id}
-              className={`nav-link ${activeSection === id ? 'active' : ''}`}
-              onClick={() => scrollTo(id)}
-              id={`nav-${id}`}
-            >
-              {label}
-              <span className="nav-link-dot" />
-            </button>
-          ))}
         </div>
 
         {/* CTA */}
@@ -87,15 +57,6 @@ export default function NavBar({ sections }) {
             onClick={() => scrollTo('features')}
           >
             Get Started
-          </button>
-          {/* Mobile hamburger */}
-          <button
-            className={`nav-burger ${menuOpen ? 'open' : ''}`}
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Menu"
-            id="nav-burger-btn"
-          >
-            <span /><span /><span />
           </button>
         </div>
       </div>

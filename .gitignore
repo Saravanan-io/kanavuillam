@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Diffs and temporary files
+*.txt
+/WhatsApp Video 2026-06-25 at 5.58.19 PM.mp4

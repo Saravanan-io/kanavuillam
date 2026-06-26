@@ -15,7 +15,7 @@ export default function AmbientParticles() {
     let animId;
     let w = window.innerWidth;
     let h = window.innerHeight;
-    canvas.width  = w;
+    canvas.width = w;
     canvas.height = h;
 
     // Particles — professional indigo / cyan / blue tones
@@ -28,18 +28,20 @@ export default function AmbientParticles() {
     ];
 
     const particles = Array.from({ length: COUNT }, () => ({
-      x:    Math.random() * w,
-      y:    Math.random() * h,
-      r:    0.8 + Math.random() * 2.2,
-      vy:   -(0.15 + Math.random() * 0.35),
-      vx:   (Math.random() - 0.5) * 0.18,
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: 0.8 + Math.random() * 2.2,
+      vy: -(0.15 + Math.random() * 0.35),
+      vx: (Math.random() - 0.5) * 0.18,
       alpha: 0.08 + Math.random() * 0.22,
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
       twinkleSpeed: 0.004 + Math.random() * 0.006,
       twinklePhase: Math.random() * Math.PI * 2,
     }));
 
+    let running = true;
     const render = (time = 0) => {
+      if (!running) return;
       ctx.clearRect(0, 0, w, h);
       particles.forEach((p) => {
         p.twinklePhase += p.twinkleSpeed;
@@ -70,9 +72,23 @@ export default function AmbientParticles() {
     };
     window.addEventListener('resize', onResize);
 
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        running = false;
+        cancelAnimationFrame(animId);
+      } else {
+        if (!running) {
+          running = true;
+          render();
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', onResize);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
     };
   }, []);
 

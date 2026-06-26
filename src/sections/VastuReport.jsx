@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { DoorOpen, ChefHat, Bed, ChevronsUp, Compass, Sparkles } from 'lucide-react';
@@ -26,7 +27,7 @@ export default function VastuReport() {
   const sectionRef  = useRef(null);
   const compassRef  = useRef(null);
 
-  useEffect(() => {
+  useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     const tl = gsap.timeline({
@@ -38,11 +39,11 @@ export default function VastuReport() {
     });
 
     // Jump + float entrance
-    tl.fromTo(sectionRef.current,
+    tl.fromTo('.vastu-inner',
       { y: 50 },
       { y: 0, duration: 0.3, ease: 'power4.out' }
     )
-    .fromTo(sectionRef.current,
+    .fromTo('.vastu-inner',
       { scale: 0.97 },
       { scale: 1, duration: 0.5, ease: 'elastic.out(1.1, 0.5)' }, '<'
     );
@@ -53,13 +54,23 @@ export default function VastuReport() {
       { rotation: 0, scale: 1, opacity: 1, duration: 1.5, ease: 'back.out(1.6)' }, 0.1
     );
 
+    // Needle spin and stop in North side
+    const needle = compassRef.current?.querySelector('.compass-needle');
+    if (needle) {
+      tl.fromTo(needle,
+        { rotation: -1080 },
+        { rotation: 0, duration: 2.8, ease: 'back.out(3.5)' },
+        0.2
+      );
+    }
+
     // Float continuously
-    gsap.to(compassRef.current, {
+    const floatAnim = gsap.to(compassRef.current, {
       y: -14, duration: 2.8, ease: 'power1.inOut', yoyo: true, repeat: -1,
     });
 
     // Energy rings pulse
-    gsap.to('.energy-ring', {
+    const ringsAnim = gsap.to('.energy-ring', {
       scale: 1.18, opacity: 0,
       duration: 2, ease: 'power2.out',
       stagger: 0.4, repeat: -1,
@@ -74,10 +85,41 @@ export default function VastuReport() {
     tl.fromTo('.vastu-zone-bar', { scaleX: 0 }, { scaleX: 1, duration: 0.9, stagger: 0.08, ease: 'power3.out', transformOrigin: 'left' }, 0.6);
 
     // Sparkle particles
-    gsap.to('.lotus-particle', {
+    const sparklesAnim = gsap.to('.lotus-particle', {
       y: '-=50', opacity: 0, duration: 3.5, ease: 'power1.out', stagger: 0.35, repeat: -1,
     });
-  }, []);
+
+    // High performance throttling: pause infinite animations when parent is off-screen
+    const visibilityTrigger = ScrollTrigger.create({
+      trigger: sectionRef.current,
+      start: 'top bottom',
+      end: 'bottom top',
+      onEnter: () => {
+        floatAnim.play();
+        ringsAnim.play();
+        sparklesAnim.play();
+      },
+      onLeave: () => {
+        floatAnim.pause();
+        ringsAnim.pause();
+        sparklesAnim.pause();
+      },
+      onEnterBack: () => {
+        floatAnim.play();
+        ringsAnim.play();
+        sparklesAnim.play();
+      },
+      onLeaveBack: () => {
+        floatAnim.pause();
+        ringsAnim.pause();
+        sparklesAnim.pause();
+      }
+    });
+
+    return () => {
+      visibilityTrigger.kill();
+    };
+  }, { scope: sectionRef });
 
   return (
     <div className="vastu-section" ref={sectionRef}>
@@ -174,10 +216,10 @@ export default function VastuReport() {
         {/* RIGHT */}
         <div className="vastu-right">
           <div className="vastu-title-area">
-            <p className="section-label">Ancient Wisdom · Modern AI</p>
+            <p className="section-label">Ancient Wisdom · Modern Precision</p>
             <h2 className="section-title">Vastu Analysis<br/>Overview</h2>
             <p className="section-subtitle">
-              Every room analyzed against 5,000-year-old Vedic architecture principles with modern AI precision.
+              Every room analyzed against 5,000-year-old Vedic architecture principles with modern scientific precision.
             </p>
             <div className="gradient-line" />
           </div>

@@ -69,10 +69,10 @@ export default function Preloader({ onComplete }) {
           </div>
           <div className="pre-logo-text">
             <span className="pre-brand">PlanX</span>
-            <span className="pre-tagline">AI Architecture Studio</span>
+            <span className="pre-tagline">Digital Architecture Studio</span>
           </div>
         </div>
-
+ 
         {/* Progress bar */}
         <div className="pre-progress-wrap">
           <div className="pre-progress-track">
@@ -106,9 +106,9 @@ export default function Preloader({ onComplete }) {
           </div>
           <span className="pre-percent" ref={percentRef}>{pct}%</span>
         </div>
-
+ 
         <p className="pre-status">
-          {pct < 30  ? 'Initializing AI engine…'
+          {pct < 30  ? 'Initializing rendering engine…'
           : pct < 60 ? 'Loading 3D assets…'
           : pct < 85 ? 'Preparing your workspace…'
           :             'Almost ready…'}

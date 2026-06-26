@@ -3,32 +3,32 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 // ── Immediately needed ──
-import LandingPage  from './sections/LandingPage';
-import NavBar       from './components/NavBar';
-import Preloader    from './components/Preloader';
+import LandingPage from './sections/LandingPage';
+import NavBar from './components/NavBar';
+import Preloader from './components/Preloader';
 import './App.css';
 
 // ── Lazy-loaded (only when scrolled into view or after preloader) ──
 const AmbientParticles = lazy(() => import('./components/AmbientParticles'));
-const FeatureCards     = lazy(() => import('./sections/FeatureCards'));
-const ThreeDView       = lazy(() => import('./sections/ThreeDView'));
-const VastuReport      = lazy(() => import('./sections/VastuReport'));
-const CostEstimation   = lazy(() => import('./sections/CostEstimation'));
+const FeatureCards = lazy(() => import('./sections/FeatureCards'));
+const ThreeDView = lazy(() => import('./sections/ThreeDView'));
+const VastuReport = lazy(() => import('./sections/VastuReport'));
+const CostEstimation = lazy(() => import('./sections/CostEstimation'));
 const StructuralReport = lazy(() => import('./sections/StructuralReport'));
-const Elevation        = lazy(() => import('./sections/Elevation'));
-const ReportsShowcase  = lazy(() => import('./sections/ReportsShowcase'));
+const Elevation = lazy(() => import('./sections/Elevation'));
+const ReportsShowcase = lazy(() => import('./sections/ReportsShowcase'));
 
 gsap.registerPlugin(ScrollTrigger);
 
 const sections = [
-  { id: 'landing',    label: 'Home' },
-  { id: 'features',  label: 'Features' },
-  { id: 'threed',    label: '3D View' },
-  { id: 'vastu',     label: 'Vastu' },
-  { id: 'cost',      label: 'Cost' },
-  { id: 'structural',label: 'Structural' },
+  { id: 'landing', label: 'Home' },
+  { id: 'features', label: 'Features' },
+  { id: 'threed', label: '3D View' },
+  { id: 'vastu', label: 'Vastu' },
+  { id: 'cost', label: 'Cost' },
+  { id: 'structural', label: 'Structural' },
   { id: 'elevation', label: 'Elevation' },
-  { id: 'reports',   label: 'Reports' },
+  { id: 'reports', label: 'Reports' },
 ];
 
 // Minimal section skeleton shown while lazy chunk loads
@@ -53,9 +53,10 @@ function SectionSkeleton() {
 }
 
 export default function App() {
-  const appRef          = useRef(null);
+  const appRef = useRef(null);
   const [ready, setReady] = useState(false);   // preloader done?
   const [showSections, setShowSections] = useState(false); // lazy sections visible?
+  const [activeSection, setActiveSection] = useState('landing');
 
   // After preloader exits, unmount it and show lazy content
   const handlePreloaderDone = () => {
@@ -87,7 +88,7 @@ export default function App() {
   useEffect(() => {
     if (!showSections) return;
 
-    const refreshIntervals = [150, 400, 800, 1500, 2500, 4500, 7000];
+    const refreshIntervals = [150, 400, 800, 1500, 2500, 4500, 7000, 10000];
     const timers = refreshIntervals.map(delay =>
       setTimeout(() => {
         ScrollTrigger.refresh();
@@ -103,18 +104,45 @@ export default function App() {
     };
   }, [showSections]);
 
+  // 3. Highlight sidebar navigation dots based on section intersection
+  useEffect(() => {
+    if (!showSections) return;
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '-35% 0px -45% 0px', // detects when section covers mid viewport area
+      threshold: 0
+    };
+
+    const observerCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    sections.forEach(({ id }) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [showSections]);
+
   useEffect(() => {
     if (!ready) return;
     ScrollTrigger.config({ limitCallbacks: true });
 
-    // Magnetic buttons — deferred so DOM is settled
+    let cleanups = [];
     const timerId = setTimeout(() => {
-      const cleanups = [];
       document.querySelectorAll('.btn-gold, .btn-ghost').forEach(el => {
-        const onMove  = (e) => {
+        const onMove = (e) => {
           const rect = el.getBoundingClientRect();
-          const dx = e.clientX - (rect.left + rect.width  / 2);
-          const dy = e.clientY - (rect.top  + rect.height / 2);
+          const dx = e.clientX - (rect.left + rect.width / 2);
+          const dy = e.clientY - (rect.top + rect.height / 2);
           gsap.to(el, { x: dx * 0.25, y: dy * 0.2, duration: 0.4, ease: 'power2.out' });
         };
         const onLeave = () => gsap.to(el, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.4)' });
@@ -125,12 +153,11 @@ export default function App() {
           el.removeEventListener('mouseleave', onLeave);
         });
       });
-      return () => cleanups.forEach(fn => fn?.());
     }, 2500);
 
     return () => {
       clearTimeout(timerId);
-      ScrollTrigger.getAll().forEach(t => t.kill());
+      cleanups.forEach(fn => fn());
     };
   }, [ready]);
 
@@ -150,20 +177,9 @@ export default function App() {
         </Suspense>
       )}
 
-      <NavBar sections={sections} />
+      <NavBar sections={sections} showSections={showSections} />
 
-      {/* Progress dots */}
-      <nav className="nav-dots" aria-label="Section navigation">
-        {sections.map(({ id, label }) => (
-          <button
-            key={id}
-            className="nav-dot"
-            title={label}
-            id={`dot-${id}`}
-            onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })}
-          />
-        ))}
-      </nav>
+
 
       <main>
         {/* LandingPage loaded eagerly — first paint must be instant */}

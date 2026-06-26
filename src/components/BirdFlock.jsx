@@ -1,3 +1,4 @@
+import React, { useMemo } from 'react';
 import './BirdFlock.css';
 
 /**
@@ -13,7 +14,7 @@ const LAYERS = [
     className: 'bird-bg',
     scale: 0.45,
     speed: [60, 80],
-    y:  [8, 22],
+    y:  [5, 14],
     delay: [0, 8],
   },
   {
@@ -22,7 +23,7 @@ const LAYERS = [
     className: 'bird-mid',
     scale: 0.7,
     speed: [40, 55],
-    y: [12, 34],
+    y: [8, 20],
     delay: [0, 6],
   },
   {
@@ -31,7 +32,7 @@ const LAYERS = [
     className: 'bird-fg',
     scale: 1.1,
     speed: [22, 36],
-    y: [18, 45],
+    y: [10, 26],
     delay: [0, 4],
   },
 ];
@@ -68,36 +69,53 @@ function BirdSVG({ scale }) {
   );
 }
 
-export default function BirdFlock() {
+const BirdFlock = React.memo(function BirdFlock() {
+  const birds = useMemo(() => {
+    return LAYERS.flatMap((layer) =>
+      Array.from({ length: layer.count }, (_, i) => {
+        const speed = layer.speed[0] + Math.random() * (layer.speed[1] - layer.speed[0]);
+        const yPct  = layer.y[0]    + Math.random() * (layer.y[1] - layer.y[0]);
+        const delay = layer.delay[0] + Math.random() * (layer.delay[1] - layer.delay[0]);
+        const waver = 2 + Math.random() * 4; // vertical waver amplitude px
+        const waverDur = 3 + Math.random() * 4;
+        const waverDel = Math.random() * 5;
+        const scale = layer.scale + Math.random() * 0.15;
+
+        return {
+          key: `${layer.z}-${i}`,
+          className: `bird ${layer.className}`,
+          style: {
+            '--duration':   `${speed}s`,
+            '--delay':      `-${delay}s`,
+            '--y':          `${yPct}%`,
+            zIndex:         layer.z + 2,
+          },
+          waverStyle: {
+            '--waver':      `${waver}px`,
+            '--waver-dur':  `${waverDur}s`,
+            '--waver-del':  `-${waverDel}s`,
+          },
+          scale,
+        };
+      })
+    );
+  }, []);
+
   return (
     <div className="bird-flock" aria-hidden="true">
-      {LAYERS.map((layer) =>
-        Array.from({ length: layer.count }, (_, i) => {
-          const speed = layer.speed[0] + Math.random() * (layer.speed[1] - layer.speed[0]);
-          const yPct  = layer.y[0]    + Math.random() * (layer.y[1] - layer.y[0]);
-          const delay = layer.delay[0] + Math.random() * (layer.delay[1] - layer.delay[0]);
-          const waver = 2 + Math.random() * 4; // vertical waver amplitude px
-          const waverDur = 3 + Math.random() * 4;
-
-          return (
-            <div
-              key={`${layer.z}-${i}`}
-              className={`bird ${layer.className}`}
-              style={{
-                '--duration':   `${speed}s`,
-                '--delay':      `-${delay}s`,
-                '--y':          `${yPct}vh`,
-                '--waver':      `${waver}px`,
-                '--waver-dur':  `${waverDur}s`,
-                '--waver-del':  `${Math.random() * 5}s`,
-                zIndex:         layer.z + 2,
-              }}
-            >
-              <BirdSVG scale={layer.scale + Math.random() * 0.15} />
-            </div>
-          );
-        })
-      )}
+      {birds.map((bird) => (
+        <div
+          key={bird.key}
+          className={bird.className}
+          style={bird.style}
+        >
+          <div className="bird-waver" style={bird.waverStyle}>
+            <BirdSVG scale={bird.scale} />
+          </div>
+        </div>
+      ))}
     </div>
   );
-}
+});
+
+export default BirdFlock;

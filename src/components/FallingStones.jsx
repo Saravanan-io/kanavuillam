@@ -21,26 +21,28 @@ export default function FallingStones({ imgReady }) {
     let lastDustSpawn = 0;
     let lastCloudSpawn = 0;
 
+    let canvasWidth = 0;
+    let canvasHeight = 0;
     const resizeCanvas = () => {
       const rect = canvas.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
+      canvasWidth = rect.width;
+      canvasHeight = rect.height;
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
       ctx.scale(dpr, dpr);
     };
 
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    const getHouseRect = () => {
+    let cachedHouseRect = null;
+    const updateHouseRect = () => {
       const imgEl = document.querySelector('.floating-house-img');
       const canvasEl = canvasRef.current;
-      if (!imgEl || !canvasEl) return null;
+      if (!imgEl || !canvasEl) return;
 
       const imgRect = imgEl.getBoundingClientRect();
       const canvasRect = canvasEl.getBoundingClientRect();
 
-      return {
+      cachedHouseRect = {
         left: imgRect.left - canvasRect.left,
         top: imgRect.top - canvasRect.top,
         width: imgRect.width,
@@ -48,13 +50,22 @@ export default function FallingStones({ imgReady }) {
       };
     };
 
+    const handleResize = () => {
+      resizeCanvas();
+      updateHouseRect();
+    };
+
+    window.addEventListener('resize', handleResize);
+    resizeCanvas();
+    setTimeout(updateHouseRect, 200);
+
     const createStone = (rect) => {
       if (!rect) return null;
 
       // Spawn along the rocky underside (V-shape outline)
       const t = 0.2 + Math.random() * 0.6; // spawn within the center 60% of the island
       const x = rect.left + rect.width * t;
-      
+
       const distFromCenter = Math.abs(t - 0.5) * 2; // 0 at center, 1 at edges
       const y = rect.top + rect.height * (0.66 + 0.18 * (1 - distFromCenter));
 
@@ -101,7 +112,7 @@ export default function FallingStones({ imgReady }) {
 
     const createDust = (rect) => {
       if (!rect) return null;
-      
+
       const t = 0.2 + Math.random() * 0.6;
       const x = rect.left + rect.width * t;
       const distFromCenter = Math.abs(t - 0.5) * 2;
@@ -141,13 +152,13 @@ export default function FallingStones({ imgReady }) {
     };
 
     const updateAndDraw = () => {
-      const rect = canvas.getBoundingClientRect();
-      const width = rect.width;
-      const height = rect.height;
+      const width = canvasWidth;
+      const height = canvasHeight;
 
       ctx.clearRect(0, 0, width, height);
 
-      const houseRect = getHouseRect();
+      if (!cachedHouseRect) updateHouseRect();
+      const houseRect = cachedHouseRect;
       if (!houseRect) {
         animationFrameId = requestAnimationFrame(updateAndDraw);
         return;
@@ -196,7 +207,7 @@ export default function FallingStones({ imgReady }) {
         grad.addColorStop(0, `rgba(135, 122, 108, ${cloud.alpha})`);
         grad.addColorStop(0.3, `rgba(135, 122, 108, ${cloud.alpha * 0.4})`);
         grad.addColorStop(1, 'rgba(135, 122, 108, 0)');
-        
+
         ctx.fillStyle = grad;
         ctx.beginPath();
         ctx.arc(cloud.x, cloud.y, cloud.size, 0, Math.PI * 2);
@@ -244,19 +255,7 @@ export default function FallingStones({ imgReady }) {
         const scale = 0.25 + 0.75 * z;
         ctx.scale(scale, scale);
 
-        // Cinematic Depth of Field Blur
-        let blurVal = 0;
-        if (z < 0.4) {
-          blurVal = (0.4 - z) * 3.5; // background blur
-        } else if (z > 0.85) {
-          blurVal = (z - 0.85) * 5.0; // foreground zoom blur
-        }
-
-        if (blurVal > 0.5) {
-          ctx.filter = `blur(${blurVal.toFixed(1)}px)`;
-        } else {
-          ctx.filter = 'none';
-        }
+        // Depth scale and opacity represent DOF to avoid slow ctx.filter blur
 
         // Shadow for foreground stones
         if (z > 0.65) {
@@ -276,7 +275,7 @@ export default function FallingStones({ imgReady }) {
 
           // Calculate facet normal angle
           const midAngle = Math.atan2((p1.y + p2.y) / 2, (p1.x + p2.x) / 2);
-          
+
           // Shading intensity
           const dot = Math.cos(midAngle - localLight);
           const brightness = 0.45 + 0.75 * ((dot + 1) / 2);
@@ -307,8 +306,6 @@ export default function FallingStones({ imgReady }) {
         }
 
         ctx.restore();
-        // Reset filter for next rendering steps
-        ctx.filter = 'none';
         return true;
       });
 
@@ -318,7 +315,7 @@ export default function FallingStones({ imgReady }) {
     updateAndDraw();
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
     };
   }, [imgReady]);

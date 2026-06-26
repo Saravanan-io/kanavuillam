@@ -1,21 +1,22 @@
 import { useEffect, useRef } from 'react';
+import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Box, Compass, Coins, Shield, Ruler, Cpu, Zap, Play, Sparkles, User, Calendar, ShieldCheck } from 'lucide-react';
 import './ReportsShowcase.css';
 
 const REPORTS = [
-  { id: 'rpt-3d',         title: '3D View',          icon: Box,     color: '#00b4d8', pages: 12, status: 'Complete', preview: 'Floor plans, 3D renders, interior views', highlight: 'Photorealistic renders' },
-  { id: 'rpt-vastu',      title: 'Vastu Report',      icon: Compass, color: '#6366F1', pages: 18, status: 'Complete', preview: 'Direction analysis, zone compliance',    highlight: '68/100 compliance score' },
-  { id: 'rpt-cost',       title: 'Cost Estimation',   icon: Coins,   color: '#10B981', pages: 24, status: 'Complete', preview: 'Item-wise breakdown, market rates',     highlight: 'Total ₹20.05L' },
-  { id: 'rpt-structural', title: 'Structural Report', icon: Shield,  color: '#EF4444', pages: 32, status: 'Complete', preview: 'Engineering calcs, IS standards',       highlight: 'Grade A+ certified' },
-  { id: 'rpt-elevation',  title: 'Elevation Design',  icon: Ruler,   color: '#8B5CF6', pages: 16, status: 'Complete', preview: 'Front, side, rear, section views',       highlight: 'AutoCAD DWG included' },
+  { id: 'rpt-3d',         title: '3D View',          icon: Box,     color: '#00b4d8', pages: 12, status: 'Complete', preview: 'Floor plans, 3D renders, interior views', highlight: 'Photorealistic renders', image: '/3d_view_preview.png' },
+  { id: 'rpt-vastu',      title: 'Vastu Report',      icon: Compass, color: '#6366F1', pages: 18, status: 'Complete', preview: 'Direction analysis, zone compliance',    highlight: '68/100 compliance score', image: '/vastu_report_preview.png' },
+  { id: 'rpt-cost',       title: 'Cost Estimation',   icon: Coins,   color: '#10B981', pages: 24, status: 'Complete', preview: 'Item-wise breakdown, market rates',     highlight: 'Total ₹20.05L', image: '/cost_estimation_preview.png' },
+  { id: 'rpt-structural', title: 'Structural Report', icon: Shield,  color: '#EF4444', pages: 32, status: 'Complete', preview: 'Engineering calcs, IS standards',       highlight: 'Grade A+ certified', image: '/structural_report_preview.png' },
+  { id: 'rpt-elevation',  title: 'Elevation Design',  icon: Ruler,   color: '#8B5CF6', pages: 16, status: 'Complete', preview: 'Front, side, rear, section views',       highlight: 'AutoCAD DWG included', image: '/elevation_design_preview.png' },
 ];
 
 const TRUST_BADGES = [
-  { icon: Cpu,      label: 'AI-Powered Accuracy' },
+  { icon: Cpu,      label: 'Precision Accuracy' },
   { icon: Zap,      label: 'Real-time Results' },
-  { icon: Play,     label: 'Cinematic 3D Experience' },
+  { icon: Play,     label: 'Interactive 3D Experience' },
   { icon: Sparkles, label: 'Smart & Easy Process' },
 ];
 
@@ -23,7 +24,7 @@ export default function ReportsShowcase() {
   const sectionRef   = useRef(null);
   const spotlightRef = useRef(null);
 
-  useEffect(() => {
+  useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     // Spotlight sweep
@@ -57,8 +58,10 @@ export default function ReportsShowcase() {
       scrollTrigger: {
         trigger: sectionRef.current,
         start: 'top top',
-        end: '+=140%', // Compressed pin duration
+        end: '+=140%',
         pin: true,
+        pinSpacing: true,
+        anticipatePin: 1,
         scrub: 1,
         invalidateOnRefresh: true,
       }
@@ -145,15 +148,38 @@ export default function ReportsShowcase() {
       };
     });
 
+    // High performance visibility trigger
+    const visibilityTrigger = ScrollTrigger.create({
+      trigger: sectionRef.current,
+      start: 'top bottom',
+      end: 'bottom top',
+      onEnter: () => {
+        spotlightAnim.play();
+        ctaPulseAnim.play();
+        starsAnim.play();
+      },
+      onLeave: () => {
+        spotlightAnim.pause();
+        ctaPulseAnim.pause();
+        starsAnim.pause();
+      },
+      onEnterBack: () => {
+        spotlightAnim.play();
+        ctaPulseAnim.play();
+        starsAnim.play();
+      },
+      onLeaveBack: () => {
+        spotlightAnim.pause();
+        ctaPulseAnim.pause();
+        starsAnim.pause();
+      }
+    });
+
     return () => {
-      spotlightAnim.kill();
-      ctaPulseAnim.kill();
-      starsAnim.kill();
-      tl.scrollTrigger?.kill();
-      tl.kill();
       cards.forEach(card => card._cleanupEvents?.());
+      visibilityTrigger.kill();
     };
-  }, []);
+  }, { scope: sectionRef });
 
   return (
     <div className="rsc-section" ref={sectionRef}>
@@ -192,7 +218,7 @@ export default function ReportsShowcase() {
               { val: '5',    label: 'Premium Reports' },
               { val: '102+', label: 'Total Pages' },
               { val: 'PDF',  label: 'Export Format' },
-              { val: '100%', label: 'AI Verified' },
+              { val: '100%', label: 'Verified & Certified' },
             ].map((s, i) => (
               <div key={i} className="rsc-stat">
                 <span className="rsc-stat-val">{s.val}</span>
@@ -206,8 +232,8 @@ export default function ReportsShowcase() {
         <div className="rsc-outro-wrap">
           {/* Final CTA */}
           <div className="rsc-final-cta">
-            <div className="rsc-cta-badge">Ready to Build Your Dream Home?</div>
-            <h2 className="rsc-cta-title">AI Makes It Simple,<br/>Fast &amp; Perfect.</h2>
+            <div className="rsc-cta-badge">Ready to Build Your Kanavu illam?</div>
+            <h2 className="rsc-cta-title">We Make It Simple,<br/>Fast &amp; Perfect.</h2>
             <p className="rsc-cta-sub">Everything you need to break ground on your dream home — in one comprehensive package.</p>
             <div className="rsc-cta-btns">
               <button className="btn-gold rsc-cta-btn" id="start-journey-cta">Start Your Journey →</button>
@@ -229,16 +255,6 @@ export default function ReportsShowcase() {
 
           {/* Footer line */}
           <div className="rsc-footer" style={{ flexDirection: 'column', gap: '0.5rem', marginTop: '0.8rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', justifyContent: 'center' }}>
-              <p>Trusted by Thousands of Homeowners</p>
-              <div className="rsc-avatars">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="rsc-avatar">
-                    <User size={12} strokeWidth={2.5} style={{ color: 'var(--gray-300)' }} />
-                  </div>
-                ))}
-              </div>
-            </div>
             <p style={{ opacity: 0.5, fontSize: '0.65rem', marginTop: '0.2rem' }}>© 2026 PlanX. All rights reserved. Designed with passion for architectural perfection.</p>
           </div>
         </div>
@@ -267,6 +283,12 @@ export default function ReportsShowcase() {
                 </span>
               </div>
             </div>
+
+            {r.image && (
+              <div className="rsc-card-img-wrap">
+                <img src={r.image} alt={r.title} className="rsc-card-img" />
+              </div>
+            )}
 
             <h3 className="rsc-card-title">{r.title}</h3>
             <p className="rsc-card-preview">{r.preview}</p>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import BirdFlock from '../components/BirdFlock';
@@ -6,20 +7,20 @@ import FallingStones from '../components/FallingStones';
 import './LandingPage.css';
 
 export default function LandingPage({ ready }) {
-  const heroRef    = useRef(null);
-  const titleRef   = useRef(null);
-  const withAiRef  = useRef(null);
-  const paraRef    = useRef(null);
-  const raysRef    = useRef(null);
+  const heroRef = useRef(null);
+  const titleRef = useRef(null);
+  const withAiRef = useRef(null);
+  const paraRef = useRef(null);
+  const raysRef = useRef(null);
   const particleRef = useRef(null);
-  const imageRef   = useRef(null);
+  const imageRef = useRef(null);
 
   /* ── Canvas particles (subtle blue sparkles) ── */
   useEffect(() => {
     const canvas = particleRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    canvas.width  = canvas.offsetWidth;
+    canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
     const COLORS = [
@@ -29,7 +30,7 @@ export default function LandingPage({ ready }) {
 
     const particles = Array.from({ length: 60 }, () => ({
       x: Math.random() * canvas.width,
-      y: canvas.height + Math.random() * 40,
+      y: Math.random() * canvas.height + Math.random() * 40,
       r: 1 + Math.random() * 2,
       vy: -(0.25 + Math.random() * 0.6),
       vx: (Math.random() - 0.5) * 0.4,
@@ -70,6 +71,19 @@ export default function LandingPage({ ready }) {
 
   useEffect(() => {
     const imgUrl = '/floating_house.png';
+
+    // Attempt to retrieve pre-processed transparent image from localStorage cache
+    try {
+      const cached = localStorage.getItem('planx_transparent_house');
+      if (cached) {
+        setProcessedImg(cached);
+        setImgReady(true);
+        return;
+      }
+    } catch (e) {
+      console.warn('LocalStorage access blocked or unavailable:', e);
+    }
+
     const img = new Image();
     img.src = imgUrl;
     img.crossOrigin = 'anonymous';
@@ -141,8 +155,14 @@ export default function LandingPage({ ready }) {
 
       ctx.putImageData(imgData, 0, 0);
       try {
-        setProcessedImg(canvas.toDataURL('image/png'));
+        const base64 = canvas.toDataURL('image/png');
+        setProcessedImg(base64);
         setImgReady(true);
+        try {
+          localStorage.setItem('planx_transparent_house', base64);
+        } catch (storageError) {
+          console.warn('Saving processed image to localStorage failed:', storageError);
+        }
       } catch (e) {
         console.error('Canvas processing data URL export failed:', e);
         setProcessedImg(imgUrl);
@@ -165,7 +185,7 @@ export default function LandingPage({ ready }) {
   }, []);
 
   /* ── GSAP entrance timeline ── */
-  useEffect(() => {
+  useGSAP(() => {
     if (!ready) return;
 
     const tl = gsap.timeline({ delay: 0.2 });
@@ -187,7 +207,7 @@ export default function LandingPage({ ready }) {
       );
     }
 
-    // 3) "With AI-Powered" subtitle
+    // 3) "With Modern" subtitle
     tl.fromTo(withAiRef.current,
       { y: 20, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out' },
@@ -214,7 +234,7 @@ export default function LandingPage({ ready }) {
       ease: 'none',
       scrollTrigger: { trigger: '#landing', start: 'top top', end: 'bottom top', scrub: true },
     });
-  }, [ready]);
+  }, { dependencies: [ready], scope: heroRef });
 
   const scrollDown = () =>
     document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
@@ -255,20 +275,20 @@ export default function LandingPage({ ready }) {
           <h1 className="landing-title" ref={titleRef}>
             <span className="word">Build</span>{' '}
             <span className="word">Your</span>{' '}
-            <span className="word title-blue">Dream</span>{' '}
-            <span className="word title-blue">Home</span>
+            <span className="word title-blue">Kanavu</span>{' '}
+            <span className="word title-blue">illam</span>
           </h1>
 
-          {/* "With AI-Powered Architecture" subtitle */}
+          {/* "With Modern Architecture" subtitle */}
           <p className="landing-with-ai" ref={withAiRef}>
-            With AI-Powered Architecture
+            With Modern Architecture
           </p>
 
           {/* Description */}
           <p className="landing-paragraph" ref={paraRef}>
-            Cinematic 3D visualization, Vastu compliance,
-            cost estimation &amp; structural reports —
-            powered by AI, delivered instantly.
+            3D visualization, Vastu compliance,
+            cost estimation &amp; structural reports
+           ,delivered instantly.
           </p>
 
 
@@ -279,7 +299,7 @@ export default function LandingPage({ ready }) {
           <FallingStones imgReady={imgReady} />
           <img
             src={processedImg}
-            alt="AI Designed Floating House"
+            alt="Modern Designed Floating House"
             className={`floating-house-img ${imgReady ? 'ready' : 'loading'}`}
           />
         </div>

@@ -9,18 +9,45 @@ main {
   z-index: 2;
 }
 
-/* Ensure sections don't clip ambient canvas */
+/*
+  overflow:hidden is safe on ALL sections, even pinned ones.
+  When GSAP pins an element it sets position:fixed — fixed elements
+  are NOT clipped by overflow:hidden on their parents.
+  The pin-spacer (a normal div) can still expand the section height.
+  Crucially, overflow:hidden prevents higher-z-index fixed/pinned content
+  from visually bleeding into the scroll-space of PREVIOUS sections,
+  which was causing the "page comes twice" effect.
+*/
 section {
   position: relative;
   overflow: hidden;
 }
 
 /* Ascending stacking contexts to prevent z-index crossover during ScrollTrigger pins */
-#landing    { z-index: 10; }
-#features   { z-index: 20; }
-#threed     { z-index: 30; }
-#vastu      { z-index: 40; }
-#cost       { z-index: 50; }
-#structural { z-index: 60; }
-#elevation  { z-index: 70; }
-#reports    { z-index: 80; }
+#landing {
+  z-index: 10;
+}
+
+#features {
+  z-index: 20;
+}
+
+#vastu {
+  z-index: 40;
+}
+
+#cost {
+  z-index: 50;
+}
+
+#structural {
+  z-index: 60;
+}
+
+#elevation {
+  z-index: 70;
+}
+
+#reports {
+  z-index: 80;
+}

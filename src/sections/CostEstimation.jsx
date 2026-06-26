@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Database, Layers, Settings, Grid, Package, Hammer, Home, Zap, Sparkles, ShieldCheck } from 'lucide-react';
@@ -26,7 +27,7 @@ function AnimatedCounter({ target, prefix = '₹', suffix = '', duration = 2 }) 
   const ref = useRef(null);
   const [started, setStarted] = useState(false);
 
-  useEffect(() => {
+  useGSAP(() => {
     if (!started) return;
     const obj = { val: 0 };
     gsap.to(obj, {
@@ -40,7 +41,7 @@ function AnimatedCounter({ target, prefix = '₹', suffix = '', duration = 2 }) 
         }
       },
     });
-  }, [started, target, prefix, suffix, duration]);
+  }, { dependencies: [started, target], scope: ref });
 
   useEffect(() => {
     const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setStarted(true); }, { threshold: 0.5 });
@@ -55,7 +56,7 @@ export default function CostEstimation() {
   const sectionRef = useRef(null);
   const canvasRef  = useRef(null);
 
-  useEffect(() => {
+  useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     // Money particle canvas
@@ -98,7 +99,7 @@ export default function CostEstimation() {
       animId = requestAnimationFrame(render);
     };
 
-    ScrollTrigger.create({
+    const canvasTrigger = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: 'top 80%',
       onEnter:     () => { if (!running) { running = true; render(); } },
@@ -127,8 +128,11 @@ export default function CostEstimation() {
         scrollTrigger: { trigger: sectionRef.current, start: 'top 65%' } }
     );
 
-    return () => cancelAnimationFrame(animId);
-  }, []);
+    return () => {
+      cancelAnimationFrame(animId);
+      canvasTrigger.kill();
+    };
+  }, { scope: sectionRef });
 
   return (
     <div className="cost-section" ref={sectionRef}>
@@ -140,7 +144,7 @@ export default function CostEstimation() {
         <div className="cost-title-area">
           <p className="section-label">Transparent Pricing</p>
           <h2 className="section-title">Estimated Grand Total</h2>
-          <p className="section-subtitle">Every rupee accounted for — AI analyzes 2,000+ market data points for precise cost breakdown.</p>
+          <p className="section-subtitle">Every rupee accounted for — we analyze 2,000+ market data points for a precise cost breakdown.</p>
         </div>
 
         <div className="cost-main">

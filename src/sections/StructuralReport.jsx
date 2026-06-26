@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
@@ -9,46 +10,95 @@ import {
 import './StructuralReport.css';
 
 const CHECKLIST = [
-  { label: 'Foundation Analysis', icon: ArrowDown,       status: 'ok' },
-  { label: 'Column Design',       icon: Columns,         status: 'ok' },
-  { label: 'Beam Design',         icon: ArrowLeftRight,  status: 'ok' },
-  { label: 'Load Analysis',       icon: Scale,           status: 'ok' },
-  { label: 'Safety Check',        icon: ShieldCheck,     status: 'ok' },
+  { label: 'Foundation Analysis', icon: ArrowDown, status: 'ok' },
+  { label: 'Column Design', icon: Columns, status: 'ok' },
+  { label: 'Beam Design', icon: ArrowLeftRight, status: 'ok' },
+  { label: 'Load Analysis', icon: Scale, status: 'ok' },
+  { label: 'Safety Check', icon: ShieldCheck, status: 'ok' },
 ];
 
 const STRUCTURAL_ITEMS = [
-  { label: 'Foundation Type', value: 'RCC Isolated Footing', status: 'verified', icon: ArrowDown      },
-  { label: 'Column Grade',    value: 'M25 Concrete',         status: 'verified', icon: Columns        },
-  { label: 'Beam Size',       value: '300×450mm RCC',        status: 'verified', icon: ArrowLeftRight },
-  { label: 'Slab Thickness',  value: '150mm Two-way',        status: 'verified', icon: Layers         },
-  { label: 'Steel Grade',     value: 'Fe500 HYSD Bars',      status: 'verified', icon: Wrench         },
-  { label: 'Load Capacity',   value: '5 kN/m² Live Load',    status: 'verified', icon: Scale          },
-  { label: 'Seismic Zone',    value: 'Zone III – Designed',  status: 'caution',  icon: Globe          },
-  { label: 'Wind Load',       value: '47 m/s Basic Speed',   status: 'verified', icon: Wind           },
+  { label: 'Foundation Type', value: 'RCC Isolated Footing', status: 'verified', icon: ArrowDown },
+  { label: 'Column Grade', value: 'M25 Concrete', status: 'verified', icon: Columns },
+  { label: 'Beam Size', value: '300×450mm RCC', status: 'verified', icon: ArrowLeftRight },
+  { label: 'Slab Thickness', value: '150mm Two-way', status: 'verified', icon: Layers },
+  { label: 'Steel Grade', value: 'Fe500 HYSD Bars', status: 'verified', icon: Wrench },
+  { label: 'Load Capacity', value: '5 kN/m² Live Load', status: 'verified', icon: Scale },
+  { label: 'Seismic Zone', value: 'Zone III – Designed', status: 'caution', icon: Globe },
+  { label: 'Wind Load', value: '47 m/s Basic Speed', status: 'verified', icon: Wind },
 ];
 
 export default function StructuralReport() {
   const sectionRef = useRef(null);
 
-  useEffect(() => {
+  useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     // Radar scan loop
-    gsap.fromTo('.radar-sweep',
+    const radarSweep = gsap.fromTo('.radar-sweep',
       { yPercent: -100 },
       { yPercent: 200, duration: 4, repeat: -1, ease: 'none' }
     );
 
-    // Blueprint line draw-in on scroll
-    gsap.fromTo('.blueprint-svg path, .blueprint-svg line, .blueprint-svg rect',
-      { strokeDasharray: '400', strokeDashoffset: '400', opacity: 0 },
-      {
-        strokeDashoffset: '0', opacity: 1, duration: 2, ease: 'power2.out',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 65%',
-        }
+    // Detailed scroll-scrubbed blueprint building timeline
+    const buildTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top 75%',
+        end: 'bottom 45%',
+        scrub: 1.2,
       }
+    });
+
+    // 1. Foundation: draw the footings and bottom slab line
+    buildTl.fromTo('.bp-footing',
+      { strokeDasharray: '100', strokeDashoffset: '100', opacity: 0 },
+      { strokeDashoffset: '0', opacity: 1, duration: 1.5, ease: 'none' }
+    );
+
+    // 2. Columns: draw the vertical structural columns from bottom to top
+    buildTl.fromTo('.bp-column',
+      { strokeDasharray: '150', strokeDashoffset: '150', opacity: 0 },
+      { strokeDashoffset: '0', opacity: 1, duration: 2.0, stagger: 0.1, ease: 'none' },
+      '-=0.5'
+    );
+
+    // 3. Beams: draw the horizontal concrete/steel deck beams
+    buildTl.fromTo('.bp-beam',
+      { strokeDasharray: '600', strokeDashoffset: '600', opacity: 0 },
+      { strokeDashoffset: '0', opacity: 1, duration: 1.5, ease: 'none' },
+      '-=0.5'
+    );
+
+    // 4. Roof Truss: draw the triangular roof rafters and web braces
+    buildTl.fromTo('.bp-truss',
+      { strokeDasharray: '400', strokeDashoffset: '400', opacity: 0 },
+      { strokeDashoffset: '0', opacity: 1, duration: 2.0, stagger: 0.08, ease: 'none' },
+      '-=0.5'
+    );
+
+    // 5. Reinforcement Nodes & Moment curves
+    buildTl.fromTo('.bp-node',
+      { scale: 0, opacity: 0, transformOrigin: 'center' },
+      { scale: 1, opacity: 1, duration: 0.8, stagger: 0.05, ease: 'back.out(1.8)' },
+      '-=0.5'
+    );
+    buildTl.fromTo('.bp-moment',
+      { strokeDasharray: '50', strokeDashoffset: '50', opacity: 0 },
+      { strokeDashoffset: '0', opacity: 1, duration: 1.2, stagger: 0.05, ease: 'none' },
+      '-=0.8'
+    );
+
+    // 6. Dimensions and Load Arrows
+    buildTl.fromTo('.bp-load line, .bp-load path',
+      { strokeDasharray: '30', strokeDashoffset: '30', opacity: 0 },
+      { strokeDashoffset: '0', opacity: 1, duration: 1.0, stagger: 0.05, ease: 'none' },
+      '-=0.5'
+    );
+    buildTl.fromTo('.bp-dim',
+      { strokeDasharray: '350', strokeDashoffset: '350', opacity: 0 },
+      { strokeDashoffset: '0', opacity: 1, duration: 1.2, ease: 'none' },
+      '-=0.8'
     );
 
     // Fade in spec boxes
@@ -63,20 +113,41 @@ export default function StructuralReport() {
     // Right panel content
     gsap.fromTo('.sr-title-area',
       { x: 60, opacity: 0 },
-      { x: 0, opacity: 1, duration: 1, ease: 'power3.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' } }
+      {
+        x: 0, opacity: 1, duration: 1, ease: 'power3.out',
+        scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' }
+      }
     );
     gsap.fromTo('.sr-item',
       { x: 50, opacity: 0 },
-      { x: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: 'power3.out',
-        scrollTrigger: { trigger: '.sr-items', start: 'top 75%' } }
+      {
+        x: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: 'power3.out',
+        scrollTrigger: { trigger: '.sr-items', start: 'top 75%' }
+      }
     );
     gsap.fromTo('.sr-check-item',
       { x: 30, opacity: 0 },
-      { x: 0, opacity: 1, duration: 0.5, stagger: 0.08, ease: 'power3.out',
-        scrollTrigger: { trigger: '.sr-checklist', start: 'top 78%' } }
+      {
+        x: 0, opacity: 1, duration: 0.5, stagger: 0.08, ease: 'power3.out',
+        scrollTrigger: { trigger: '.sr-checklist', start: 'top 78%' }
+      }
     );
-  }, []);
+
+    // High performance visibility trigger
+    const visibilityTrigger = ScrollTrigger.create({
+      trigger: sectionRef.current,
+      start: 'top bottom',
+      end: 'bottom top',
+      onEnter: () => radarSweep.play(),
+      onLeave: () => radarSweep.pause(),
+      onEnterBack: () => radarSweep.play(),
+      onLeaveBack: () => radarSweep.pause()
+    });
+
+    return () => {
+      visibilityTrigger.kill();
+    };
+  }, { scope: sectionRef });
 
   return (
     <div className="sr-section" ref={sectionRef}>
@@ -90,7 +161,7 @@ export default function StructuralReport() {
         <div className="sr-scene blueprint-dashboard">
           {/* Grid Background */}
           <div className="blueprint-grid" />
-          
+
           {/* Radar Line Sweep */}
           <div className="radar-sweep" />
 
@@ -98,37 +169,102 @@ export default function StructuralReport() {
           <svg viewBox="0 0 400 380" className="blueprint-svg" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="blueGlow" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgba(6,182,212,0.18)" />
+                <stop offset="0%" stopColor="rgba(6,182,212,0.15)" />
                 <stop offset="100%" stopColor="transparent" />
               </linearGradient>
             </defs>
-            {/* House Outline (Blueprint style) */}
-            <path d="M 60 300 L 60 160 L 200 60 L 340 160 L 340 300 Z" fill="url(#blueGlow)" stroke="#06B6D4" strokeWidth="1.5" strokeDasharray="5,2" opacity="0.6" />
-            <path d="M 60 160 L 340 160" stroke="#06B6D4" strokeWidth="1.5" opacity="0.8" />
 
-            {/* Columns & Foundation lines */}
+            {/* Grid Foundation Line */}
+            <line className="bp-footing" x1="40" y1="300" x2="360" y2="300" stroke="#06B6D4" strokeWidth="2" opacity="0.8" />
+
+            {/* 5 Column Footings */}
             {[80, 140, 200, 260, 320].map((x, i) => (
-              <g key={i}>
-                <line x1={x} y1="300" x2={x} y2="100" stroke="#06B6D4" strokeWidth="1" opacity="0.4" />
-                {/* Moment forces / vectors */}
-                <path d={`M ${x-10} 160 Q ${x} 140 ${x+10} 160`} fill="none" stroke="#818CF8" strokeWidth="1.5" opacity="0.7" />
-                <circle cx={x} cy="160" r="3.5" fill="#818CF8" />
-                <circle cx={x} cy="300" r="4" fill="#06B6D4" />
-                {/* Footing detail */}
-                <rect x={x-15} y="300" width="30" height="15" fill="none" stroke="#06B6D4" strokeWidth="1.2" opacity="0.7" />
+              <g key={`footing-${i}`}>
+                <rect className="bp-footing" x={x - 15} y="300" width="30" height="15" fill="none" stroke="#06B6D4" strokeWidth="1.5" opacity="0.8" />
+                <line className="bp-footing" x1={x - 10} y1="307" x2={x + 10} y2="307" stroke="#06B6D4" strokeWidth="1" opacity="0.5" />
               </g>
             ))}
 
-            {/* Dimension Lines */}
-            <line x1="40" y1="325" x2="360" y2="325" stroke="#64748B" strokeWidth="1" strokeDasharray="3,3" />
-            <line x1="40" y1="320" x2="40" y2="330" stroke="#64748B" strokeWidth="1" />
-            <line x1="360" y1="320" x2="360" y2="330" stroke="#64748B" strokeWidth="1" />
-            <text x="200" y="340" textAnchor="middle" fill="#94A3B8" fontSize="10" fontFamily="monospace">SPAN: 12.4m</text>
+            {/* Vertical Columns (Double lines for realistic column thickness) */}
+            {[80, 140, 200, 260, 320].map((x, i) => (
+              <g key={`column-${i}`}>
+                {/* Left column line */}
+                <line className="bp-column" x1={x - 3} y1="300" x2={x - 3} y2="160" stroke="#06B6D4" strokeWidth="1.2" opacity="0.8" />
+                {/* Right column line */}
+                <line className="bp-column" x1={x + 3} y1="300" x2={x + 3} y2="160" stroke="#06B6D4" strokeWidth="1.2" opacity="0.8" />
+                {/* Column ties (hashes) */}
+                <line className="bp-column" x1={x - 3} y1="260" x2={x + 3} y2="260" stroke="#06B6D4" strokeWidth="0.8" opacity="0.4" />
+                <line className="bp-column" x1={x - 3} y1="220" x2={x + 3} y2="220" stroke="#06B6D4" strokeWidth="0.8" opacity="0.4" />
+                <line className="bp-column" x1={x - 3} y1="180" x2={x + 3} y2="180" stroke="#06B6D4" strokeWidth="0.8" opacity="0.4" />
+              </g>
+            ))}
 
-            <line x1="375" y1="60" x2="375" y2="300" stroke="#64748B" strokeWidth="1" strokeDasharray="3,3" />
-            <line x1="370" y1="60" x2="380" y2="60" stroke="#64748B" strokeWidth="1" />
-            <line x1="370" y1="300" x2="380" y2="300" stroke="#64748B" strokeWidth="1" />
-            <text x="390" y="185" textAnchor="middle" fill="#94A3B8" fontSize="10" fontFamily="monospace" transform="rotate(90 390 185)">HEIGHT: 8.5m</text>
+            {/* First Floor Beam (RCC Deck) */}
+            <rect className="bp-beam" x="60" y="156" width="280" height="8" rx="1.5" fill="url(#blueGlow)" stroke="#06B6D4" strokeWidth="1.5" opacity="0.9" />
+
+            {/* Second Story Columns (Lighter weight) */}
+            {[80, 140, 200, 260, 320].map((x, i) => (
+              <line key={`upper-col-${i}`} className="bp-column" x1={x} y1="156" x2={x} y2="90" stroke="#06B6D4" strokeWidth="1.5" strokeDasharray="3,3" opacity="0.6" />
+            ))}
+
+            {/* Second Story Beam */}
+            <line className="bp-beam" x1="60" y1="90" x2="340" y2="90" stroke="#06B6D4" strokeWidth="1.5" opacity="0.8" />
+
+            {/* Roof Rafter Truss system (Triangle + inner diagonals) */}
+            {/* Main outer rafters */}
+            <path className="bp-truss" d="M 60 90 L 200 30 L 340 90 Z" fill="none" stroke="#06B6D4" strokeWidth="2" opacity="0.9" />
+            {/* Internal web braces */}
+            <line className="bp-truss" x1="200" y1="30" x2="200" y2="90" stroke="#06B6D4" strokeWidth="1.2" opacity="0.7" />
+            <line className="bp-truss" x1="130" y1="60" x2="200" y2="90" stroke="#06B6D4" strokeWidth="1.2" opacity="0.7" />
+            <line className="bp-truss" x1="270" y1="60" x2="200" y2="90" stroke="#06B6D4" strokeWidth="1.2" opacity="0.7" />
+            <line className="bp-truss" x1="130" y1="60" x2="80" y2="90" stroke="#06B6D4" strokeWidth="1.2" opacity="0.7" />
+            <line className="bp-truss" x1="270" y1="60" x2="320" y2="90" stroke="#06B6D4" strokeWidth="1.2" opacity="0.7" />
+
+            {/* Moment / Stress curves (purple arcs showing force bendings) */}
+            {[80, 140, 200, 260, 320].map((x, i) => (
+              <g key={`moment-${i}`}>
+                <path className="bp-moment" d={`M ${x - 12} 156 Q ${x} 142 ${x + 12} 156`} fill="none" stroke="#818CF8" strokeWidth="1.5" opacity="0.8" />
+                <path className="bp-moment" d={`M ${x - 12} 90 Q ${x} 80 ${x + 12} 90`} fill="none" stroke="#818CF8" strokeWidth="1.2" opacity="0.6" />
+              </g>
+            ))}
+
+            {/* Connection Joint Nodes */}
+            {[80, 140, 200, 260, 320].map((x, i) => (
+              <g key={`nodes-${i}`}>
+                <circle className="bp-node" cx={x} cy="156" r="3.5" fill="#818CF8" />
+                <circle className="bp-node" cx={x} cy="90" r="3" fill="#818CF8" />
+                <circle className="bp-node" cx={x} cy="300" r="4.5" fill="#06B6D4" />
+              </g>
+            ))}
+            <circle className="bp-node" cx="200" cy="30" r="4.5" fill="#06B6D4" />
+
+            {/* Downward Load Vector Arrows */}
+            <g className="bp-load">
+              {/* Roof loads */}
+              {[100, 150, 200, 250, 300].map((x, i) => {
+                // Calculate y coordinate on the roof slope (slope is from (60,90) to (200,30))
+                const y = x <= 200 ? 90 - ((x - 60) * 60 / 140) : 30 + ((x - 200) * 60 / 140);
+                return (
+                  <g key={`load-${i}`}>
+                    <line x1={x} y1={y - 15} x2={x} y2={y - 2} stroke="#EF4444" strokeWidth="1.2" opacity="0.85" />
+                    <path d={`M ${x - 3} ${y - 6} L ${x} ${y - 2} L ${x + 3} ${y - 6}`} fill="none" stroke="#EF4444" strokeWidth="1.2" opacity="0.85" />
+                  </g>
+                );
+              })}
+            </g>
+
+            {/* Dimension markings */}
+            <g className="bp-dim">
+              <line x1="40" y1="330" x2="360" y2="330" stroke="#64748B" strokeWidth="1" strokeDasharray="3,3" />
+              <line x1="40" y1="325" x2="40" y2="335" stroke="#64748B" strokeWidth="1" />
+              <line x1="360" y1="325" x2="360" y2="335" stroke="#64748B" strokeWidth="1" />
+              <text x="200" y="345" textAnchor="middle" fill="#94A3B8" fontSize="9" fontFamily="monospace">SPAN: 12.4m</text>
+
+              <line x1="375" y1="30" x2="375" y2="300" stroke="#64748B" strokeWidth="1" strokeDasharray="3,3" />
+              <line x1="370" y1="30" x2="380" y2="30" stroke="#64748B" strokeWidth="1" />
+              <line x1="370" y1="300" x2="380" y2="300" stroke="#64748B" strokeWidth="1" />
+              <text x="388" y="165" textAnchor="middle" fill="#94A3B8" fontSize="9" fontFamily="monospace" transform="rotate(90 388 165)">HEIGHT: 8.5m</text>
+            </g>
           </svg>
 
           {/* Dynamic CAD details overlays */}
@@ -154,9 +290,9 @@ export default function StructuralReport() {
         <div className="sr-right">
           <div className="sr-title-area">
             <p className="section-label">Engineering Excellence</p>
-            <h2 className="section-title">Structural<br/>Report</h2>
+            <h2 className="section-title">Structural<br />Report</h2>
             <p className="section-subtitle">
-              Every joint, every beam, every column calculated by certified structural engineers and verified by AI simulation.
+              Every joint, every beam, every column calculated by certified structural engineers and verified by advanced digital simulation.
             </p>
             <div className="gradient-line" />
           </div>

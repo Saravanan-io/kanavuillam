@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Box, Compass, IndianRupee, Landmark, Ruler } from 'lucide-react';
@@ -31,7 +32,7 @@ const FEATURES = [
     id: 'feat-vastu',
     icon: Compass,
     title: 'Vastu Report',
-    desc: 'AI-powered Vastu Shastra analysis for perfect home harmony.',
+    desc: 'Comprehensive Vastu Shastra analysis for perfect home harmony.',
     color: '#0D9488',
     tag: 'Harmony',
     num: '02',
@@ -66,18 +67,18 @@ const FEATURES = [
 ];
 
 export default function FeatureCards() {
-  const sectionRef  = useRef(null);
-  const titleRef    = useRef(null);
-  const gridRef     = useRef(null);
-  const cardsRef    = useRef([]);
-  const canvasRef   = useRef(null);
+  const sectionRef = useRef(null);
+  const titleRef = useRef(null);
+  const gridRef = useRef(null);
+  const cardsRef = useRef([]);
+  const canvasRef = useRef(null);
 
   /* ── Floating particles canvas ── */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    canvas.width  = canvas.offsetWidth;
+    canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
     let animId;
 
@@ -115,12 +116,12 @@ export default function FeatureCards() {
   }, []);
 
   /* ── Cinematic Scroll sequence ── */
-  useEffect(() => {
+  useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     const section = sectionRef.current;
-    const grid    = gridRef.current;
-    const cards   = cardsRef.current.filter(Boolean);
+    const grid = gridRef.current;
+    const cards = cardsRef.current.filter(Boolean);
 
     const getTranslation = (idx) => {
       const W = section.offsetWidth;
@@ -132,10 +133,10 @@ export default function FeatureCards() {
 
     /* Set initial hidden state for cards and title elements to avoid flashes */
     gsap.set(grid, { autoAlpha: 0, y: 250, x: () => getTranslation(0) });
-    gsap.set(cards, { scale: 0.75, rotateY: -45, opacity: 0, z: -80, filter: 'blur(6px)' });
-    gsap.set(cards[0], { scale: 1.05, rotateY: 0, opacity: 1, z: 60, filter: 'blur(0px)' });
+    gsap.set(cards, { scale: 0.75, rotateY: -45, opacity: 0, z: -80 });
+    gsap.set(cards[0], { scale: 1.05, rotateY: 0, opacity: 1, z: 60 });
 
-    gsap.set(titleRef.current.querySelectorAll('.char'), { opacity: 0, y: 40, filter: 'blur(6px)' });
+    gsap.set(titleRef.current.querySelectorAll('.char'), { opacity: 0, y: 40 });
     gsap.set(titleRef.current.querySelector('.gradient-line'), { scaleX: 0, opacity: 0 });
     gsap.set(titleRef.current.querySelector('.fc-scroll-hint'), { y: 20, opacity: 0 });
     gsap.set('.fc-dot', { opacity: 0, x: 20, scale: 0.5 });
@@ -147,23 +148,23 @@ export default function FeatureCards() {
       onEnter: () => {
         // Kill any ongoing animation on these elements to prevent overlap
         gsap.killTweensOf(titleRef.current.querySelectorAll('.char, .gradient-line, .fc-scroll-hint, .fc-dot'));
-        
+
         const timeline = gsap.timeline();
-        
+
         timeline.fromTo(titleRef.current.querySelectorAll('.section-label .char'),
-          { y: 35, opacity: 0, scale: 0.7, filter: 'blur(4px)', rotateX: -70, transformOrigin: '50% 100% -10px' },
-          { y: 0, opacity: 1, scale: 1, filter: 'blur(0px)', rotateX: 0, stagger: 0.015, duration: 0.9, ease: 'power3.out' }
+          { y: 35, opacity: 0, scale: 0.7, rotateX: -70, transformOrigin: '50% 100% -10px' },
+          { y: 0, opacity: 1, scale: 1, rotateX: 0, stagger: 0.015, duration: 0.9, ease: 'power3.out' }
         );
 
         timeline.fromTo(titleRef.current.querySelectorAll('.section-title .char'),
-          { y: 50, opacity: 0, scale: 0.6, filter: 'blur(8px)', rotateX: -80, transformOrigin: '50% 100% -20px' },
-          { y: 0, opacity: 1, scale: 1, filter: 'blur(0px)', rotateX: 0, stagger: 0.008, duration: 1.1, ease: 'back.out(1.2)' },
+          { y: 50, opacity: 0, scale: 0.6, rotateX: -80, transformOrigin: '50% 100% -20px' },
+          { y: 0, opacity: 1, scale: 1, rotateX: 0, stagger: 0.008, duration: 1.1, ease: 'back.out(1.2)' },
           '-=0.65'
         );
 
         timeline.fromTo(titleRef.current.querySelectorAll('.section-subtitle .char'),
-          { y: 20, opacity: 0, scale: 0.85, filter: 'blur(3px)', rotateX: -30, transformOrigin: '50% 100%' },
-          { y: 0, opacity: 0.85, scale: 1, filter: 'blur(0px)', rotateX: 0, stagger: 0.003, duration: 0.8, ease: 'power3.out' },
+          { y: 20, opacity: 0, scale: 0.85, rotateX: -30, transformOrigin: '50% 100%' },
+          { y: 0, opacity: 0.85, scale: 1, rotateX: 0, stagger: 0.003, duration: 0.8, ease: 'power3.out' },
           '-=0.75'
         );
 
@@ -187,7 +188,7 @@ export default function FeatureCards() {
       },
       onLeaveBack: () => {
         // Reset state so it animates again when scrolling down
-        gsap.to(titleRef.current.querySelectorAll('.char'), { opacity: 0, y: 35, filter: 'blur(6px)', duration: 0.4, overwrite: 'auto' });
+        gsap.to(titleRef.current.querySelectorAll('.char'), { opacity: 0, y: 35, duration: 0.4, overwrite: 'auto' });
         gsap.to(titleRef.current.querySelector('.gradient-line'), { scaleX: 0, opacity: 0, duration: 0.4, overwrite: 'auto' });
         gsap.to(titleRef.current.querySelector('.fc-scroll-hint'), { y: 20, opacity: 0, duration: 0.4, overwrite: 'auto' });
         gsap.to('.fc-dot', { opacity: 0, x: 20, scale: 0.6, duration: 0.4, overwrite: 'auto' });
@@ -230,16 +231,20 @@ export default function FeatureCards() {
 
       if (idx > 0) {
         tl.fromTo(card,
-          { scale: 0.78, rotateY: -42, opacity: 0.35, z: -70, filter: 'blur(5px)' },
-          { scale: 1.06, rotateY: 0,   opacity: 1,    z: 65,  filter: 'blur(0px)',
-            duration: 1.0, ease: 'sine.inOut' },
+          { scale: 0.78, rotateY: -42, opacity: 0.35, z: -70 },
+          {
+            scale: 1.06, rotateY: 0, opacity: 1, z: 65,
+            duration: 1.0, ease: 'sine.inOut'
+          },
           peak - 1.0
         );
       }
       if (idx < total - 1) {
         tl.to(card,
-          { scale: 0.78, rotateY: 42, opacity: 0.35, z: -70, filter: 'blur(5px)',
-            duration: 1.0, ease: 'sine.inOut' },
+          {
+            scale: 0.78, rotateY: 42, opacity: 0.35, z: -70,
+            duration: 1.0, ease: 'sine.inOut'
+          },
           peak
         );
       }
@@ -252,19 +257,19 @@ export default function FeatureCards() {
     );
     tl.fromTo('.fc-outro',
       { autoAlpha: 0, y: 50, scale: 0.95 },
-      { autoAlpha: 1, y: 0,  scale: 1, duration: 1.2, ease: 'power3.out' },
+      { autoAlpha: 1, y: 0, scale: 1, duration: 1.2, ease: 'power3.out' },
       6.4
     );
     tl.fromTo('.fc-outro .char',
-      { y: 30, opacity: 0, scale: 0.6, filter: 'blur(4px)' },
-      { y: 0, opacity: 1, scale: 1, filter: 'blur(0px)', stagger: 0.015, duration: 1.2, ease: 'back.out(1.2)' },
+      { y: 30, opacity: 0, scale: 0.6 },
+      { y: 0, opacity: 1, scale: 1, stagger: 0.015, duration: 1.2, ease: 'back.out(1.2)' },
       6.4
     );
 
     /* Depth bar progress — track active card */
     const dotEls = document.querySelectorAll('.fc-dot');
     const cardWidth = () => grid.scrollWidth / total;
-    ScrollTrigger.create({
+    const progressTrigger = ScrollTrigger.create({
       trigger: section,
       start: 'top top',
       end: '+=220%',
@@ -272,7 +277,7 @@ export default function FeatureCards() {
         const progress = self.progress;
         // map scroll progress → active card index during slide phase (1.2–6.2 out of 8 total)
         const slideStart = 1.2 / 8;
-        const slideEnd   = 6.2 / 8;
+        const slideEnd = 6.2 / 8;
         const slideProgress = Math.max(0, Math.min(1, (progress - slideStart) / (slideEnd - slideStart)));
         const activeIdx = Math.round(slideProgress * (total - 1));
         dotEls.forEach((dot, i) => {
@@ -286,10 +291,12 @@ export default function FeatureCards() {
     cards.forEach((card) => {
       const onMove = (e) => {
         const rect = card.getBoundingClientRect();
-        const x = (e.clientX - rect.left - rect.width  / 2) / rect.width;
-        const y = (e.clientY - rect.top  - rect.height / 2) / rect.height;
-        gsap.to(card, { rotateY: x * 14, rotateX: -y * 14,
-          transformPerspective: 700, duration: 0.4, ease: 'power2.out' });
+        const x = (e.clientX - rect.left - rect.width / 2) / rect.width;
+        const y = (e.clientY - rect.top - rect.height / 2) / rect.height;
+        gsap.to(card, {
+          rotateY: x * 14, rotateX: -y * 14,
+          transformPerspective: 700, duration: 0.4, ease: 'power2.out'
+        });
       };
       const onLeave = () => {
         gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.7, ease: 'elastic.out(1,0.5)' });
@@ -303,12 +310,12 @@ export default function FeatureCards() {
     });
 
     return () => {
-      ScrollTrigger.getAll().forEach(st => st.kill());
-      tl.kill();
       entryTrigger.kill();
+      tl.kill();
+      progressTrigger.kill();
       cleanups.forEach(fn => fn());
     };
-  }, []);
+  }, { scope: sectionRef });
 
   return (
     <div className="fc-section" ref={sectionRef}>
@@ -331,10 +338,10 @@ export default function FeatureCards() {
       <div className="fc-inner">
         {/* Title section */}
         <div className="fc-title-wrap" ref={titleRef}>
-          <p className="section-label">{splitText("Our AI-Powered Services")}</p>
+          <p className="section-label">{splitText("Our Specialized Services")}</p>
           <h2 className="section-title">
             {splitText("Everything You Need to Build")}
-            <br/>
+            <br />
             {splitText("Your Dream Home")}
           </h2>
           <p className="section-subtitle">
@@ -357,7 +364,7 @@ export default function FeatureCards() {
           <p className="section-label">{splitText("Seamlessly Integrated")}</p>
           <h2 className="section-title">
             {splitText("Five Modules.")}
-            <br/>
+            <br />
             {splitText("One Dream Home.")}
           </h2>
           <p className="section-subtitle">{splitText("Every feature works together to deliver your perfect home experience.")}</p>
