@@ -38,11 +38,8 @@ export default function NavBar({ showSections }) {
         {/* Logo */}
         <div className="nav-logo" onClick={() => scrollTo('landing')}>
           <div className="nav-logo-icon">
-            {/* House icon matching PlanX reference */}
-            <svg viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" width="26" height="26">
-              <path d="M3 9.5L12 3l9 6.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" />
-              <polyline points="9 21 9 13 15 13 15 21" />
-            </svg>
+            <img src="/kanavu_illam_icon.png" alt="Kanavu Illam Icon" className="nav-logo-img" />
+
           </div>
           <span className="nav-logo-text">
             Kanavu<span className="logo-x">illam</span>

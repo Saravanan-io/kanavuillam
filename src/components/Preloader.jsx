@@ -3,15 +3,15 @@ import gsap from 'gsap';
 import './Preloader.css';
 
 export default function Preloader({ onComplete }) {
-  const overlayRef  = useRef(null);
-  const logoRef     = useRef(null);
-  const percentRef  = useRef(null);
+  const overlayRef = useRef(null);
+  const logoRef = useRef(null);
+  const percentRef = useRef(null);
   const [pct, setPct] = useState(0);
 
   useEffect(() => {
     let prog = 0;
     const total = 1800; // ms total fake-load time
-    const step  = 16;   // ~60fps
+    const step = 16;   // ~60fps
 
     // Animate the progress counter
     const interval = setInterval(() => {
@@ -23,7 +23,7 @@ export default function Preloader({ onComplete }) {
         // Small pause then cinematic exit
         setTimeout(() => {
           const tl = gsap.timeline({ onComplete });
-          tl.to(logoRef.current,  { autoAlpha: 0, y: -20, duration: 0.4, ease: 'power2.in' });
+          tl.to(logoRef.current, { autoAlpha: 0, y: -20, duration: 0.4, ease: 'power2.in' });
           tl.to(overlayRef.current, {
             scaleY: 0,
             transformOrigin: 'top center',
@@ -37,7 +37,7 @@ export default function Preloader({ onComplete }) {
     // Logo entrance
     gsap.fromTo(logoRef.current,
       { autoAlpha: 0, y: 24, scale: 0.88 },
-      { autoAlpha: 1, y: 0,  scale: 1, duration: 0.7, ease: 'back.out(1.8)', delay: 0.15 }
+      { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: 'back.out(1.8)', delay: 0.15 }
     );
 
     return () => clearInterval(interval);
@@ -54,25 +54,9 @@ export default function Preloader({ onComplete }) {
       <div className="pre-content" ref={logoRef}>
         {/* Logo mark */}
         <div className="pre-logo">
-          <div className="pre-logo-icon">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M24 4L44 18V44H28V30H20V44H4V18L24 4Z"
-                stroke="url(#grad)" strokeWidth="2.5" strokeLinejoin="round"
-                fill="rgba(79,70,229,0.1)" />
-              <defs>
-                <linearGradient id="grad" x1="4" y1="4" x2="44" y2="44">
-                  <stop offset="0%" stopColor="#6366F1" />
-                  <stop offset="100%" stopColor="#06B6D4" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-          <div className="pre-logo-text">
-            <span className="pre-brand">PlanX</span>
-            <span className="pre-tagline">Digital Architecture Studio</span>
-          </div>
+          <img src="/kanavu_illam_logo.png" alt="Kanavu Illam Logo" className="pre-logo-img" />
         </div>
- 
+
         {/* Progress bar */}
         <div className="pre-progress-wrap">
           <div className="pre-progress-track">
@@ -106,12 +90,12 @@ export default function Preloader({ onComplete }) {
           </div>
           <span className="pre-percent" ref={percentRef}>{pct}%</span>
         </div>
- 
+
         <p className="pre-status">
-          {pct < 30  ? 'Initializing rendering engine…'
-          : pct < 60 ? 'Loading 3D assets…'
-          : pct < 85 ? 'Preparing your workspace…'
-          :             'Almost ready…'}
+          {pct < 30 ? 'Initializing rendering engine…'
+            : pct < 60 ? 'Loading 3D assets…'
+              : pct < 85 ? 'Preparing your workspace…'
+                : 'Almost ready…'}
         </p>
       </div>
     </div>

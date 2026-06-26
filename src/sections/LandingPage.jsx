@@ -288,7 +288,7 @@ export default function LandingPage({ ready }) {
           <p className="landing-paragraph" ref={paraRef}>
             3D visualization, Vastu compliance,
             cost estimation &amp; structural reports
-           ,delivered instantly.
+            ,delivered instantly.
           </p>
 
 
