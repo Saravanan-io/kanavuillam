@@ -292,7 +292,7 @@ export default function StructuralReport() {
             <p className="section-label">Engineering Excellence</p>
             <h2 className="section-title">Structural<br />Report</h2>
             <p className="section-subtitle">
-            Every joint, every beam, every column documented with detailed structural calculations and design data.
+              Every joint, every beam, every column documented with detailed structural calculations and design data.
             </p>
             <div className="gradient-line" />
           </div>
