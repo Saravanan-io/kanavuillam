@@ -18,14 +18,20 @@
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(circle, rgba(99,102,241,0.15) 1px, transparent 1px);
+    radial-gradient(circle, rgba(99, 102, 241, 0.15) 1px, transparent 1px);
   background-size: 40px 40px;
   animation: gridPan 20s linear infinite;
   pointer-events: none;
 }
+
 @keyframes gridPan {
-  0%   { background-position: 0 0; }
-  100% { background-position: 40px 40px; }
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 40px 40px;
+  }
 }
 
 /* Ambient glow orbs */
@@ -36,22 +42,34 @@
   pointer-events: none;
   animation: orbPulse 6s ease-in-out infinite alternate;
 }
+
 .pre-orb-1 {
-  width: 500px; height: 500px;
-  top: -120px; left: -120px;
+  width: 500px;
+  height: 500px;
+  top: -120px;
+  left: -120px;
   background: rgba(99, 102, 241, 0.18);
   animation-duration: 7s;
 }
+
 .pre-orb-2 {
-  width: 400px; height: 400px;
-  bottom: -100px; right: -80px;
+  width: 400px;
+  height: 400px;
+  bottom: -100px;
+  right: -80px;
   background: rgba(6, 182, 212, 0.14);
   animation-duration: 5s;
   animation-direction: reverse;
 }
+
 @keyframes orbPulse {
-  0%   { transform: scale(1) translate(0, 0); }
-  100% { transform: scale(1.15) translate(20px, 20px); }
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+
+  100% {
+    transform: scale(1.15) translate(20px, 20px);
+  }
 }
 
 /* Main centered content */
@@ -60,7 +78,8 @@
   flex-direction: column;
   align-items: center;
   gap: 2.5rem;
-  visibility: hidden; /* controlled by GSAP */
+  visibility: hidden;
+  /* controlled by GSAP */
   opacity: 0;
 }
 
@@ -70,15 +89,22 @@
   align-items: center;
   justify-content: center;
 }
+
 .pre-logo-img {
   height: 130px;
   width: auto;
   filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.35));
   animation: logoImgGlow 3s ease-in-out infinite alternate;
 }
+
 @keyframes logoImgGlow {
-  0%   { filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.3)); }
-  100% { filter: drop-shadow(0 0 28px rgba(6, 182, 212, 0.6)); }
+  0% {
+    filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.3));
+  }
+
+  100% {
+    filter: drop-shadow(0 0 28px rgba(6, 182, 212, 0.6));
+  }
 }
 
 /* Progress bar */
@@ -89,6 +115,7 @@
   gap: 0.7rem;
   width: 320px;
 }
+
 .pre-progress-track {
   width: 100%;
   height: 3px;
@@ -97,6 +124,7 @@
   overflow: visible;
   position: relative;
 }
+
 .pre-progress-bar {
   height: 100%;
   width: 0%;
@@ -105,13 +133,16 @@
   transition: width 0.1s linear;
   position: relative;
 }
+
 /* Moving glow tip */
 .pre-progress-bar::after {
   content: '';
   position: absolute;
-  right: -2px; top: 50%;
+  right: -2px;
+  top: 50%;
   transform: translateY(-50%);
-  width: 10px; height: 10px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: #06B6D4;
   box-shadow: 0 0 12px 4px rgba(6, 182, 212, 0.7);
@@ -140,9 +171,12 @@
 /* Running boy micro-animation container */
 .pre-boy-container {
   position: absolute;
-  right: -10px; /* Center it at the current tip of the loading bar */
-  bottom: 0px;  /* Sit right on top of the line */
-  transform: translateY(-19px); /* Shift up so the boy's feet (ending at 24px) are on the track line */
+  right: -10px;
+  /* Center it at the current tip of the loading bar */
+  bottom: 0px;
+  /* Sit right on top of the line */
+  transform: translateY(-19px);
+  /* Shift up so the boy's feet (ending at 24px) are on the track line */
   pointer-events: none;
   z-index: 10;
 }
@@ -190,26 +224,61 @@
 
 /* Run cycle keyframes */
 @keyframes runLeftLeg {
-  0%, 100% { transform: rotate(-35deg); }
-  50% { transform: rotate(40deg); }
+
+  0%,
+  100% {
+    transform: rotate(-35deg);
+  }
+
+  50% {
+    transform: rotate(40deg);
+  }
 }
 
 @keyframes runRightLeg {
-  0%, 100% { transform: rotate(40deg); }
-  50% { transform: rotate(-35deg); }
+
+  0%,
+  100% {
+    transform: rotate(40deg);
+  }
+
+  50% {
+    transform: rotate(-35deg);
+  }
 }
 
 @keyframes runLeftArm {
-  0%, 100% { transform: rotate(35deg); }
-  50% { transform: rotate(-45deg); }
+
+  0%,
+  100% {
+    transform: rotate(35deg);
+  }
+
+  50% {
+    transform: rotate(-45deg);
+  }
 }
 
 @keyframes runRightArm {
-  0%, 100% { transform: rotate(-45deg); }
-  50% { transform: rotate(35deg); }
+
+  0%,
+  100% {
+    transform: rotate(-45deg);
+  }
+
+  50% {
+    transform: rotate(35deg);
+  }
 }
 
 @keyframes bodyBob {
-  0%, 100% { transform: translateY(0) rotate(8deg); }
-  50% { transform: translateY(-1.5px) rotate(12deg); }
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(8deg);
+  }
+
+  50% {
+    transform: translateY(-1.5px) rotate(12deg);
+  }
 }
